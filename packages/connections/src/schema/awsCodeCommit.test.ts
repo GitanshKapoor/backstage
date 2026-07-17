@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AwsCodeCommitConnectionType } from './awsCodeCommit';
 
-export type { ConnectionsService } from './ConnectionsService';
-export type { Connection, AnyConnection, AuthValue } from './Connection';
-export type {
-  ConnectionType,
-  ConnectionAuthMethodKey,
-  ConnectionAuthValue,
-  PortableSchema,
-} from './ConnectionType';
+describe('AwsCodeCommitConnectionType', () => {
+  it('requires an authenticated connection', () => {
+    expect(
+      AwsCodeCommitConnectionType.authMethods.map(({ method }) => method),
+    ).toEqual(['accessKey', 'assumeRole']);
+
+    expect(() =>
+      AwsCodeCommitConnectionType.configSchema.parse({
+        type: 'aws-codecommit',
+        host: 'us-east-1.console.aws.amazon.com',
+        region: 'us-east-1',
+        auth: [{ method: 'none' }],
+      }),
+    ).toThrow();
+  });
+});
